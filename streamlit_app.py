@@ -1,7 +1,7 @@
 import streamlit as st
 from neo4j import GraphDatabase
 import groq
-import os
+import re
 
 # Initialize Groq client
 groq_api_key = st.secrets["GROQ_API_KEY"]
@@ -20,25 +20,42 @@ def get_neo4j_driver():
             session.run("RETURN 1")
         return driver
     except Exception as e:
-        #st.error(f"Failed to connect to Neo4j: {str(e)}")
+        st.error(f"Failed to connect to Neo4j: {str(e)}")
         return None
 
 driver = get_neo4j_driver()
 
 def generate_cypher_query(symptoms):
     try:
-        prompt = f"Generate a Cypher query to find diseases indicates the following symptoms: {symptoms}"
+        prompt = f"""Generate a Cypher query to find diseases related to the following symptoms: {symptoms}
+        The query should:
+        1. Match nodes labeled as 'Symptom' that match the given symptoms
+        2. Find 'Disease' nodes that are connected to these symptoms
+        3. Return the disease names and their related symptoms
+        4. Limit the results to 5 diseases
+
+        Respond ONLY with the Cypher query, no explanations or additional text."""
+
         response = client.chat.completions.create(
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that generates Cypher queries for Neo4j database contains columns symptom,disease,medicine with the relation symptom INDICATES disease TREATED_BY medicine."},
+                {"role": "system", "content": "You are a helpful assistant that generates Cypher queries for Neo4j. Respond only with the query, no additional text."},
                 {"role": "user", "content": prompt}
             ],
             model="mixtral-8x7b-32768",
             max_tokens=200
         )
-        return response.choices[0].message.content
+        
+        # Extract the Cypher query from the response
+        query = response.choices[0].message.content.strip()
+        
+        # Basic validation: check if the query starts with a valid Cypher keyword
+        valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
+        if not any(query.upper().startswith(keyword) for keyword in valid_start_keywords):
+            raise ValueError("Generated query does not appear to be valid Cypher")
+        
+        return query
     except Exception as e:
-        #st.error(f"Error generating Cypher query: {str(e)}")
+        st.error(f"Error generating Cypher query: {str(e)}")
         return None
 
 def query_neo4j(cypher_query):
@@ -54,7 +71,10 @@ def query_neo4j(cypher_query):
 
 def formulate_answer(question, database_result):
     try:
-        prompt = f"Question: {question}\nDatabase result: {database_result}\nPlease formulate a helpful answer based on this information."
+        prompt = f"""Question: {question}
+        Database result: {database_result}
+        Please formulate a helpful answer based on this information. If no results were found, suggest that the user try rephrasing their symptoms or consult a medical professional."""
+        
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": "You are a helpful medical assistant. Provide informative answers based on the given database results."},
@@ -88,7 +108,6 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
 
     # Generate Cypher query
     cypher_query = generate_cypher_query(prompt)
-    st.write(cypher_query)
 
     if cypher_query:
         # Query Neo4j database
