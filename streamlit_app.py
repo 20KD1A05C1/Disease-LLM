@@ -65,7 +65,7 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         
         # Extract the Cypher query from the response
         query = response.choices[0].message.content.strip()
-        st.write(query)
+        #st.write(query)
         # Basic validation: check if the query starts with a valid Cypher keyword
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
         #if not any(query.upper().startswith(keyword) for keyword in valid_start_keywords):
@@ -78,15 +78,25 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         return None
 
 def query_neo4j(query):
-    if driver is None:
+    if not query:
+        st.error("The provided query is empty. Please check the input.")
         return []
+    
+    if driver is None:
+        st.error("Neo4j driver is not initialized. Please ensure the connection is set up correctly.")
+        return []
+
     try:
         with driver.session() as session:
             result = session.run(query)
-            return [record.data() for record in result]
+            data = [record.data() for record in result]
+            if not data:
+                st.warning("No data returned for the provided query.")
+            return data
     except Exception as e:
-        st.write("eeror3 teja")
         st.error(f"Error querying Neo4j: {str(e)}")
+        st.write("Error details:")
+        st.write(f"Query: {query}")
         return []
 
 def formulate_answer(question, database_result):
@@ -157,5 +167,4 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
         st.error("Unable to process your request at this time. Please try again later.")
 
 # Close Neo4j connection when the app is done
-if driver:
-    driver.close()
+
