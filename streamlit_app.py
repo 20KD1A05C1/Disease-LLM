@@ -1,7 +1,6 @@
 import streamlit as st
 from neo4j import GraphDatabase
 import groq
-import re
 
 # Initialize Groq client
 groq_api_key = st.secrets["GROQ_API_KEY"]
@@ -11,6 +10,18 @@ client = groq.Client(api_key=groq_api_key)
 neo4j_uri = st.secrets["NEO4J_URI"]
 neo4j_user = st.secrets["NEO4J_USER"]
 neo4j_password = st.secrets["NEO4J_PASSWORD"]
+
+# Neo4j schema information
+neo4j_schema = """
+Nodes:
+1. Symptom
+2. Disease
+3. Medicine
+
+Relationships:
+1. (Symptom)-[INDICATES]->(Disease)
+2. (Disease)-[TREATED_BY]->(Medicine)
+"""
 
 def get_neo4j_driver():
     try:
@@ -27,14 +38,20 @@ driver = get_neo4j_driver()
 
 def generate_cypher_query(symptoms):
     try:
-        prompt = f"""Generate a Cypher query to find diseases related to the following symptoms: {symptoms}
-        The query should:
-        1. Match nodes labeled as 'Symptom' that match the given symptoms
-        2. Find 'Disease' nodes that are connected to these symptoms
-        3. Return the disease names and their related symptoms
-        4. Limit the results to 5 diseases
+        prompt = f"""Given the following Neo4j database schema:
 
-        Respond ONLY with the Cypher query, no explanations or additional text."""
+{neo4j_schema}
+
+Generate a Cypher query to find diseases and their treatments related to the following symptoms: {symptoms}
+
+The query should:
+1. Match nodes labeled as 'Symptom' that match the given symptoms
+2. Find 'Disease' nodes that are connected to these symptoms via the 'INDICATES' relationship
+3. Find 'Medicine' nodes that are connected to the diseases via the 'TREATED_BY' relationship
+4. Return the disease names, their related symptoms, and recommended medicines
+5. Limit the results to 5 diseases
+
+Respond ONLY with the Cypher query, no explanations or additional text."""
 
         response = client.chat.completions.create(
             messages=[
@@ -42,12 +59,11 @@ def generate_cypher_query(symptoms):
                 {"role": "user", "content": prompt}
             ],
             model="mixtral-8x7b-32768",
-            max_tokens=200
+            max_tokens=300
         )
         
         # Extract the Cypher query from the response
         query = response.choices[0].message.content.strip()
-        st.write(f"Debug - Generated Query: {query}")
         
         # Basic validation: check if the query starts with a valid Cypher keyword
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
@@ -65,7 +81,7 @@ def query_neo4j(cypher_query):
     try:
         with driver.session() as session:
             result = session.run(cypher_query)
-            return [record for record in result]
+            return [record.data() for record in result]
     except Exception as e:
         st.error(f"Error querying Neo4j: {str(e)}")
         return []
@@ -74,7 +90,13 @@ def formulate_answer(question, database_result):
     try:
         prompt = f"""Question: {question}
         Database result: {database_result}
-        Please formulate a helpful answer based on this information. If no results were found, suggest that the user try rephrasing their symptoms or consult a medical professional."""
+        Please formulate a helpful answer based on this information. Include the following in your response:
+        1. The diseases that match the symptoms
+        2. A brief explanation of how the symptoms relate to each disease
+        3. Recommended medicines for each disease
+        If no results were found, suggest that the user try rephrasing their symptoms or consult a medical professional.
+        
+        Important: Always include a disclaimer that this information is for educational purposes only and should not replace professional medical advice."""
         
         response = client.chat.completions.create(
             messages=[
@@ -82,7 +104,7 @@ def formulate_answer(question, database_result):
                 {"role": "user", "content": prompt}
             ],
             model="mixtral-8x7b-32768",
-            max_tokens=300
+            max_tokens=500
         )
         return response.choices[0].message.content
     except Exception as e:
@@ -111,6 +133,9 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     cypher_query = generate_cypher_query(prompt)
 
     if cypher_query:
+        # Display the generated query (for debugging)
+        st.write(f"Debug - Generated Query: {cypher_query}")
+
         # Query Neo4j database
         db_result = query_neo4j(cypher_query)
 
