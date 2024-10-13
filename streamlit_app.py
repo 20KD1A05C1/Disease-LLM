@@ -77,7 +77,7 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         st.error(f"Error generating Cypher query: {str(e)}")
         return None
 
-def query_neo4j(cypher_query):
+def query_neo4j(query):
     if driver is None:
         return []
     try:
