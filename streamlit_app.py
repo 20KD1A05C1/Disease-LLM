@@ -3,13 +3,13 @@ from neo4j import GraphDatabase
 import groq
 
 # Initialize Groq client
-groq_api_key = "your_groq_api_key"
+groq_api_key = st.secrets["GROQ_API_KEY"]
 client = groq.Client(api_key=groq_api_key)
 
 # Initialize Neo4j connection
-neo4j_uri = "bolt://localhost:7687"
-neo4j_user = "neo4j"
-neo4j_password = "your_password"
+neo4j_uri = st.secrets["NEO4J_URI"]
+neo4j_user = st.secrets["NEO4J_USER"]
+neo4j_password = st.secrets["NEO4J_PASSWORD"]
 driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
 
 def generate_cypher_query(symptoms):
