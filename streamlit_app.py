@@ -22,7 +22,7 @@ class Neo4jDatabase:
 def get_query_from_llm(question):
     # Make a request to the Hugging Face API with the provided question
     headers = {
-        "Authorization": f"Bearer {st.secrets["hf_api_key"]["hf_api_key"]}"
+        "Authorization": f"Bearer {st.secrets["hf_api"]["hf_api_key"]}"
     }
     payload = {
         "inputs": question,
