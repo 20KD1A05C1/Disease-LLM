@@ -29,7 +29,7 @@ def get_query_from_llm(question):
         "options": {"wait_for_model": True}
     }
     response = requests.post(
-        "https://api-inference.huggingface.co/models/YOUR_MODEL_NAME",
+        "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
         headers=headers,
         json=payload
     )
