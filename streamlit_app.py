@@ -135,6 +135,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
 
     # Generate Cypher query
     cypher_query = generate_cypher_query(prompt).strip()
+    #st.write(f"Debug - Generated Query 1: {cypher_query}")
 
     if cypher_query:
         # Display the generated query (for debugging)
