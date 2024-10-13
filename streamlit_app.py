@@ -14,13 +14,13 @@ neo4j_password = st.secrets["NEO4J_PASSWORD"]
 # Neo4j schema information
 neo4j_schema = """
 Nodes:
-1. Symptom
-2. Disease
-3. Medicine
+1. symptom
+2. disease
+3. medicine
 
 Relationships:
-1. (Symptom)-[INDICATES]->(Disease)
-2. (Disease)-[TREATED_BY]->(Medicine)
+1. (symptom)-[INDICATES]->(disease)
+2. (disease)-[TREATED_BY]->(medicine)
 """
 
 def get_neo4j_driver():
@@ -45,9 +45,9 @@ def generate_cypher_query(symptoms):
 Generate a Cypher query to find diseases and their treatments related to the following symptoms: {symptoms}
 
 The query should:
-1. Match nodes labeled as 'Symptom' that match the given symptoms
-2. Find 'Disease' nodes that are connected to these symptoms via the 'INDICATES' relationship
-3. Find 'Medicine' nodes that are connected to the diseases via the 'TREATED_BY' relationship
+1. Match nodes labeled as 'symptom' that match the given symptoms
+2. Find 'disease' nodes that are connected to these symptoms via the 'INDICATES' relationship
+3. Find 'medicine' nodes that are connected to the diseases via the 'TREATED_BY' relationship
 4. Return the disease names, their related symptoms, and recommended medicines
 5. Limit the results to 5 diseases
 
