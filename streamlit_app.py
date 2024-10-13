@@ -27,7 +27,7 @@ driver = get_neo4j_driver()
 
 def generate_cypher_query(symptoms):
     try:
-        prompt = f"Generate a Cypher query to find diseases related to the following symptoms: {symptoms}"
+        prompt = f"Generate a Cypher query to find diseases indicates the following symptoms: {symptoms}"
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that generates Cypher queries for Neo4j."},
