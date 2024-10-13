@@ -23,3 +23,16 @@ def generate_cypher_query(user_input):
     except Exception as e:
         st.error(f"Error generating Cypher query: {e}")
         return None
+
+
+def format_answer(user_input, disease_data):
+    # Call the LLM to generate a user-friendly response based on the query result
+    response = requests.post(
+        GROQ_API_ENDPOINT,
+        headers={'Authorization': f'Bearer {GROQ_API_KEY}'},
+        json={
+            'prompt': f"Based on the symptoms: {user_input}, the retrieved data: {disease_data}. Formulate a detailed answer."
+        }
+    )
+    answer = response.json().get('formatted_answer')
+    return answer
