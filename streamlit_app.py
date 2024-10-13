@@ -27,10 +27,10 @@ driver = get_neo4j_driver()
 
 def generate_cypher_query(symptoms):
     try:
-        prompt = f"""Generate a Cypher query to find diseases related to the following symptoms: {symptoms}
+        prompt = f"""Generate a Cypher query to find diseases INDICATES by the following symptoms: {symptoms}
         The query should:
-        1. Match nodes labeled as 'Symptom' that match the given symptoms
-        2. Find 'Disease' nodes that are connected to these symptoms
+        1. Match nodes labeled as 'symptom' that match the given symptoms
+        2. Find 'disease' nodes that are connected to these symptoms
         3. Return the disease names and their related symptoms
         4. Limit the results to 5 diseases
 
@@ -47,6 +47,7 @@ def generate_cypher_query(symptoms):
         
         # Extract the Cypher query from the response
         query = response.choices[0].message.content.strip()
+        st.write(f"Debug - Generated Query: {cypher_query}")
         
         # Basic validation: check if the query starts with a valid Cypher keyword
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
