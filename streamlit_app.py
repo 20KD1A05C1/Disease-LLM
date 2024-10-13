@@ -47,7 +47,7 @@ def generate_cypher_query(symptoms):
         
         # Extract the Cypher query from the response
         query = response.choices[0].message.content.strip()
-        st.write(f"Debug - Generated Query: {cypher_query}")
+        st.write(f"Debug - Generated Query: {query}")
         
         # Basic validation: check if the query starts with a valid Cypher keyword
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
