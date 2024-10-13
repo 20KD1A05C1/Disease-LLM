@@ -77,7 +77,7 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         st.error(f"Error generating Cypher query: {str(e)}")
         return None
 
-def query_neo4j(query):
+def query_neo4j(cypher_query):
     if driver is None:
         return []
     try:
@@ -134,7 +134,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Generate Cypher query
-    cypher_query = generate_cypher_query(prompt)
+    cypher_query = generate_cypher_query(prompt).strip()
 
     if cypher_query:
         # Display the generated query (for debugging)
