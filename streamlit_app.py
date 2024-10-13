@@ -14,6 +14,7 @@ if st.button("Submit"):
 
         # Step 1: Generate Cypher query using LLM (Groq API)
         cypher_query = generate_cypher_query(user_input)
+        st.write("Generated Cypher Query:", cypher_query)
 
         # Step 2: Query the Neo4j database
         disease_data = query_neo4j(cypher_query)
