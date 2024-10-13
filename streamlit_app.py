@@ -140,10 +140,10 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     if cypher_query:
         # Display the generated query (for debugging)
         #st.write(f"Debug - Generated Query: {cypher_query}")
-        st.write(query)
+        
 
         # Query Neo4j database
-        db_result = query_neo4j(query)
+        db_result = query_neo4j(cypher_query.strip())
 
         # Formulate answer
         answer = formulate_answer(prompt, db_result)
