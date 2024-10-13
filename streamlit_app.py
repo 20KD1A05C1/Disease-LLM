@@ -31,6 +31,7 @@ def get_neo4j_driver():
             session.run("RETURN 1")
         return driver
     except Exception as e:
+        st.write("eeror1 teja")
         st.error(f"Failed to connect to Neo4j: {str(e)}")
         return None
 
@@ -72,6 +73,7 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         
         return query
     except Exception as e:
+        st.write("eeror2 teja")
         st.error(f"Error generating Cypher query: {str(e)}")
         return None
 
@@ -83,6 +85,7 @@ def query_neo4j(cypher_query):
             result = session.run(cypher_query)
             return [record.data() for record in result]
     except Exception as e:
+        st.write("eeror3 teja")
         st.error(f"Error querying Neo4j: {str(e)}")
         return []
 
@@ -108,6 +111,7 @@ def formulate_answer(question, database_result):
         )
         return response.choices[0].message.content
     except Exception as e:
+        st.write("eeror4 teja")
         st.error(f"Error formulating answer: {str(e)}")
         return "I'm sorry, but I couldn't process your request at this time. Please try again later."
 
@@ -134,7 +138,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
 
     if cypher_query:
         # Display the generated query (for debugging)
-        st.write(f"Debug - Generated Query: {cypher_query}")
+        #st.write(f"Debug - Generated Query: {cypher_query}")
 
         # Query Neo4j database
         db_result = query_neo4j(cypher_query)
