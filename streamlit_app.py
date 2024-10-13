@@ -67,8 +67,8 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         st.write(query)
         # Basic validation: check if the query starts with a valid Cypher keyword
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
-        if not any(query.upper().startswith(keyword) for keyword in valid_start_keywords):
-            raise ValueError("Generated query does not appear to be valid Cypher")
+        #if not any(query.upper().startswith(keyword) for keyword in valid_start_keywords):
+            #raise ValueError("Generated query does not appear to be valid Cypher")
         
         return query
     except Exception as e:
