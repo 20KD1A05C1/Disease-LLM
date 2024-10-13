@@ -1,28 +1,78 @@
 import streamlit as st
-from neo4j_utils import query_neo4j
-from llm_utils import generate_cypher_query, format_answer
+from neo4j import GraphDatabase
+import groq
 
-# Streamlit App
-st.title("Symptom-based Disease Query Chatbot")
+# Initialize Groq client
+groq_api_key = "your_groq_api_key"
+client = groq.Client(api_key=groq_api_key)
 
-# User Input
-user_input = st.text_input("Describe your symptoms:")
+# Initialize Neo4j connection
+neo4j_uri = "bolt://localhost:7687"
+neo4j_user = "neo4j"
+neo4j_password = "your_password"
+driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
 
-if st.button("Submit"):
-    if user_input:
-        st.write("Processing your input...")
+def generate_cypher_query(symptoms):
+    prompt = f"Generate a Cypher query to find diseases related to the following symptoms: {symptoms}"
+    response = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that generates Cypher queries for Neo4j."},
+            {"role": "user", "content": prompt}
+        ],
+        model="mixtral-8x7b-32768",
+        max_tokens=200
+    )
+    return response.choices[0].message.content
 
-        # Step 1: Generate Cypher query using LLM (Groq API)
-        cypher_query = generate_cypher_query(user_input)
-        st.write("Generated Cypher Query:", cypher_query)
+def query_neo4j(cypher_query):
+    with driver.session() as session:
+        result = session.run(cypher_query)
+        return [record for record in result]
 
-        # Step 2: Query the Neo4j database
-        disease_data = query_neo4j(cypher_query)
+def formulate_answer(question, database_result):
+    prompt = f"Question: {question}\nDatabase result: {database_result}\nPlease formulate a helpful answer based on this information."
+    response = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": "You are a helpful medical assistant. Provide informative answers based on the given database results."},
+            {"role": "user", "content": prompt}
+        ],
+        model="mixtral-8x7b-32768",
+        max_tokens=300
+    )
+    return response.choices[0].message.content
 
-        # Step 3: Formulate a well-structured answer using LLM (Groq API)
-        final_answer = format_answer(user_input, disease_data)
+st.title("Medical Symptom Checker")
 
-        # Display the answer
-        st.write("**Answer:**", final_answer)
-    else:
-        st.write("Please enter symptoms to proceed.")
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# React to user input
+if prompt := st.chat_input("What symptoms are you experiencing?"):
+    # Display user message in chat message container
+    st.chat_message("user").markdown(prompt)
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
+    # Generate Cypher query
+    cypher_query = generate_cypher_query(prompt)
+
+    # Query Neo4j database
+    db_result = query_neo4j(cypher_query)
+
+    # Formulate answer
+    answer = formulate_answer(prompt, db_result)
+
+    # Display assistant response in chat message container
+    with st.chat_message("assistant"):
+        st.markdown(answer)
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": answer})
+
+# Close Neo4j connection when the app is done
+driver.close()
