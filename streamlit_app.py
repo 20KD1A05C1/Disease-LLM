@@ -30,7 +30,7 @@ def generate_cypher_query(symptoms):
         prompt = f"Generate a Cypher query to find diseases indicates the following symptoms: {symptoms}"
         response = client.chat.completions.create(
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that generates Cypher queries for Neo4j."},
+                {"role": "system", "content": "You are a helpful assistant that generates Cypher queries for Neo4j database contains columns symptom,disease,medicine with the relation symptom INDICATES disease TREATED_BY medicine."},
                 {"role": "user", "content": prompt}
             ],
             model="mixtral-8x7b-32768",
