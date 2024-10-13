@@ -144,7 +144,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Generate Cypher query
-    cypher_query = query #generate_cypher_query(prompt).strip()
+    cypher_query = generate_cypher_query(prompt).strip()
     #st.write(f"Debug - Generated Query 1: {cypher_query}")
 
     if cypher_query:
