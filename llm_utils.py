@@ -1,4 +1,5 @@
 import requests
+import streamlit as st
 
 # Replace with your actual Groq API details
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
