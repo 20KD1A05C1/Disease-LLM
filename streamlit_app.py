@@ -20,7 +20,7 @@ def get_neo4j_driver():
             session.run("RETURN 1")
         return driver
     except Exception as e:
-        st.error(f"Failed to connect to Neo4j: {str(e)}")
+        #st.error(f"Failed to connect to Neo4j: {str(e)}")
         return None
 
 driver = get_neo4j_driver()
@@ -38,7 +38,7 @@ def generate_cypher_query(symptoms):
         )
         return response.choices[0].message.content
     except Exception as e:
-        st.error(f"Error generating Cypher query: {str(e)}")
+        #st.error(f"Error generating Cypher query: {str(e)}")
         return None
 
 def query_neo4j(cypher_query):
@@ -88,6 +88,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
 
     # Generate Cypher query
     cypher_query = generate_cypher_query(prompt)
+    st.write(cypher_query)
 
     if cypher_query:
         # Query Neo4j database
