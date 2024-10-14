@@ -66,7 +66,7 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         # Extract the Cypher query from the response
         query = response.choices[0].message.content.strip()
         st.write(query)
-        trimmed="".join(query.splitlines())
+        trimmed=" ".join(query.splitlines())
         st.write("tejas query " + trimmed)
         # Basic validation: check if the query starts with a valid Cypher keyword
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
