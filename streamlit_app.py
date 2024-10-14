@@ -151,6 +151,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
    RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines 
    LIMIT 5
    """
+
    
     #st.write(f"Debug - Generated Query 1: {cypher_query}")
 
