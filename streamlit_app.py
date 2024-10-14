@@ -145,10 +145,8 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
      # Generate Cypher query
-    cypher_query ="""
-MATCH (s:Symptom)-[:INDICATES]->(d:Disease)-[:TREATED_BY]->(m:Medicine) WHERE s.name IN ['fever', 'cough', 'fatigue'] RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines LIMIT 5
-"""
- #generate_cypher_query(prompt).strip("'")
+    cypher_query
+=generate_cypher_query(prompt).strip("'")
     #st.write("tejas last" + cypher_query)
 
    
