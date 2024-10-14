@@ -148,8 +148,10 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
    cypher_query = """
    MATCH (s:Symptom)-[:INDICATES]->(d:Disease)-[:TREATED_BY]->(m:Medicine) 
    WHERE s.name IN ['fever', 'cold']
-   RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines LIMIT 5
+   RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines 
+   LIMIT 5
    """
+   
     #st.write(f"Debug - Generated Query 1: {cypher_query}")
 
     if cypher_query:
