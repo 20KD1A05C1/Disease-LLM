@@ -65,7 +65,7 @@ Respond ONLY with the Cypher query, no explanations or additional text."""
         
         # Extract the Cypher query from the response
         query = response.choices[0].message.content.strip()
-        #st.write(query)
+        st.write("tejas query",query)
         # Basic validation: check if the query starts with a valid Cypher keyword
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
         #if not any(query.upper().startswith(keyword) for keyword in valid_start_keywords):
@@ -144,13 +144,8 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Generate Cypher query
-   # cypher_query = generate_cypher_query(prompt).strip()
-   cypher_query = """
-   MATCH (s:Symptom)-[:INDICATES]->(d:Disease)-[:TREATED_BY]->(m:Medicine) 
-   WHERE s.name IN ['fever', 'cold']
-   RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines 
-   LIMIT 5
-   """
+   cypher_query = generate_cypher_query(prompt).strip()
+   
 
    
     #st.write(f"Debug - Generated Query 1: {cypher_query}")
