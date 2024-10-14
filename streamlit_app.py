@@ -52,7 +52,7 @@ The query should:
 4. Return the disease names, their related symptoms, and recommended medicines
 5. Limit the results to 5 diseases
 
-Respond ONLY with the Cypher query, no explanations or additional text."""
+Respond ONLY with the Cypher query, no explanations or no extra text or additional text."""
 
         response = client.chat.completions.create(
             messages=[
@@ -146,7 +146,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
      # Generate Cypher query
     cypher_query = generate_cypher_query(prompt).strip()
-    st.write("tejas last" + cypher_query)
+    #st.write("tejas last" + cypher_query)
 
    
    
