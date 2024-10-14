@@ -36,7 +36,7 @@ def get_neo4j_driver():
         return None
 
 driver = get_neo4j_driver()
-query=""
+
 def generate_cypher_query(symptoms):
     try:
         prompt = f"""Given the following Neo4j database schema:
