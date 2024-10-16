@@ -121,7 +121,7 @@ def formulate_answer(question, database_result):
             model="mixtral-8x7b-32768",
             max_tokens=500
         )
-        return response.choices[0].message.content
+        return response.choices[1].message.content
     except Exception as e:
         st.write("eeror4 teja")
         st.error(f"Error formulating answer: {str(e)}")
