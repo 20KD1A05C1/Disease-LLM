@@ -62,9 +62,9 @@ Respond ONLY with the Cypher query, no explanations or no extra text or addition
             model="mixtral-8x7b-32768",
             max_tokens=300
         )
-        
+
         # Extract the Cypher query from the response
-        query = response.choices[0].message.content
+        query = response.choices[0].message.content.strip("'")
         #st.write(query)
         trimmed=" ".join(query.splitlines())
         #st.write("tejas query " + trimmed)
@@ -72,7 +72,7 @@ Respond ONLY with the Cypher query, no explanations or no extra text or addition
         valid_start_keywords = ['MATCH', 'CALL', 'CREATE', 'MERGE']
         #if not any(query.upper().startswith(keyword) for keyword in valid_start_keywords):
             #raise ValueError("Generated query does not appear to be valid Cypher")
-        
+
         return trimmed
     except Exception as e:
         st.write("eeror2 teja")
@@ -83,7 +83,7 @@ def query_neo4j(query):
     if not query:
         st.error("The provided query is empty. Please check the input.")
         return []
-    
+
     if driver is None:
         st.error("Neo4j driver is not initialized. Please ensure the connection is set up correctly.")
         return []
@@ -112,7 +112,7 @@ def formulate_answer(question, database_result):
         If no results were found, suggest that the user try rephrasing their symptoms or consult a medical professional.
         
         Important: Always include a disclaimer that this information is for educational purposes only and should not replace professional medical advice."""
-        
+
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": "You are a helpful medical assistant. Provide informative answers based on the given database results."},
@@ -145,20 +145,23 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
      # Generate Cypher query
-    cypher_query=generate_cypher_query(prompt).strip("'")
+    cypher_query ="""
+MATCH (s:Symptom)-[:INDICATES]->(d:Disease)-[:TREATED_BY]->(m:Medicine) WHERE s.name IN ['fever', 'cough', 'fatigue'] RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines LIMIT 5
+"""
+ #generate_cypher_query(prompt).strip("'")
     #st.write("tejas last" + cypher_query)
 
-   
-   
-   
 
-   
+
+
+
+
     #st.write(f"Debug - Generated Query 1: {cypher_query}")
 
     if cypher_query:
         # Display the generated query (for debugging)
         #st.write(f"Debug - Generated Query: {cypher_query}")
-        
+
 
         # Query Neo4j database
         db_result = query_neo4j(cypher_query.strip())
@@ -175,4 +178,3 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
         st.error("Unable to process your request at this time. Please try again later.")
 
 # Close Neo4j connection when the app is done
-
