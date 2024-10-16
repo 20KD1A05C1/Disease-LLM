@@ -64,7 +64,7 @@ Respond ONLY with the Cypher query, no explanations or no extra text or addition
         )
         
         # Extract the Cypher query from the response
-        query = response.choices[1].message.content.strip("'")
+        query = response.choices[0].message.content
         #st.write(query)
         trimmed=" ".join(query.splitlines())
         #st.write("tejas query " + trimmed)
