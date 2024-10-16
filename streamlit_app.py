@@ -145,7 +145,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
      # Generate Cypher query
-    cypher_query=generate_cypher_query(prompt)
+    cypher_query=generate_cypher_query(prompt).strip(""")
     #st.write("tejas last" + cypher_query)
 
    
