@@ -64,7 +64,7 @@ Respond ONLY with the Cypher query, no explanations or no extra text or addition
         )
         
         # Extract the Cypher query from the response
-        query = response.choices[0].message.content.strip("'")
+        query = response.choices[1].message.content.strip("'")
         #st.write(query)
         trimmed=" ".join(query.splitlines())
         #st.write("tejas query " + trimmed)
@@ -121,7 +121,7 @@ def formulate_answer(question, database_result):
             model="mixtral-8x7b-32768",
             max_tokens=500
         )
-        return response.choices[1].message.content
+        return response.choices[0].message.content
     except Exception as e:
         st.write("eeror4 teja")
         st.error(f"Error formulating answer: {str(e)}")
