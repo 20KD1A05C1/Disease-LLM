@@ -93,7 +93,7 @@ def query_neo4j(query):
             result = session.run(query)
             data = [record.data() for record in result]
             if not data:
-                st.warning("finding best answer..)
+                st.warning("finding best answer..")
             return data
     except Exception as e:
         st.error(f"Error querying Neo4j: {str(e)}")
