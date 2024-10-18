@@ -110,7 +110,7 @@ def formulate_answer(question, database_result):
         2. A brief explanation of how the symptoms relate to each disease
         3. Recommended medicines for each disease
         
-        If you found database return result is wrong,you give correct Answer which disease suitable for symptoms.If no results were found, suggest that the user try rephrasing their symptoms or consult a medical professional.
+        If you found database return result is wrong,instead of saying this answer is wrong you can directly give correct Answer which disease suitable for symptoms.If no results were found, instead of saying database results are empty you can directly give correct answer.
         
         Important: Always include a disclaimer that this information is for educational purposes only and should not replace professional medical advice."""
 
@@ -147,7 +147,7 @@ if prompt := st.chat_input("What symptoms are you experiencing?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
      # Generate Cypher query
     cypher_query ="""
-MATCH (s:Symptom)-[:INDICATES]->(d:Disease)-[:TREATED_BY]->(m:Medicine) WHERE s.name IN ['Headache, sensitivity to light and sound'] RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines LIMIT 5
+MATCH (s:Symptom)-[:INDICATES]->(d:Disease)-[:TREATED_BY]->(m:Medicine) WHERE s.name IN ['Fever, cough, fatigue'] RETURN d.name AS Disease, collect(s.name) AS Symptoms, collect(m.name) AS Medicines LIMIT 5
 """
  #generate_cypher_query(prompt).strip("'")
     #st.write("tejas last" + cypher_query)
