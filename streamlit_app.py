@@ -109,7 +109,8 @@ def formulate_answer(question, database_result):
         1. The diseases that match the symptoms
         2. A brief explanation of how the symptoms relate to each disease
         3. Recommended medicines for each disease
-        If no results were found, suggest that the user try rephrasing their symptoms or consult a medical professional.
+        
+        If you found database return result is wrong,you give correct Answer which disease suitable for symptoms.If no results were found, suggest that the user try rephrasing their symptoms or consult a medical professional.
         
         Important: Always include a disclaimer that this information is for educational purposes only and should not replace professional medical advice."""
 
