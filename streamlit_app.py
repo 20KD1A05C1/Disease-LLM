@@ -93,7 +93,7 @@ def query_neo4j(query):
             result = session.run(query)
             data = [record.data() for record in result]
             if not data:
-                st.warning("No data returned for the provided query.")
+                st.warning("finding best answer..)
             return data
     except Exception as e:
         st.error(f"Error querying Neo4j: {str(e)}")
@@ -176,5 +176,3 @@ MATCH (s:Symptom)-[:INDICATES]->(d:Disease)-[:TREATED_BY]->(m:Medicine) WHERE s.
         st.session_state.messages.append({"role": "assistant", "content": answer})
     else:
         st.error("Unable to process your request at this time. Please try again later.")
-
-# Close Neo4j connection when the app is done
